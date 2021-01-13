@@ -1,82 +1,76 @@
-import React, { Component } from 'react'; 
+import React, { useEffect, useState } from 'react'; 
+import axios from 'axios'; 
 
 import Table from 'react-bootstrap/Table'; 
 
-class Dashboard extends Component {
+function Dashboard(){
 
-    constructor(props){
-        super(props); 
-        this.state = {
-            error: null, 
-            isLoaded: false, 
-            items: []
-        }; 
+    const [planets, setData] = useState({data: []}); 
+
+    useEffect(async () => {
+        const result = await axios(
+            "https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=exoplanets&select=pl_hostname,pl_name,pl_pnum,pl_orbper,pl_bmassj,st_dist&order=dec&format=json"
+        ); 
+
+        setData(result.data); 
+    }); 
+
+
+    function filltable(planet){
+        <tr key={planet.pl_name}>
+            <td>{planet.pl_name}</td>
+            <td>{planet.pl_hostname}</td>
+            <td>{planet.pl_pnum}</td>
+            <td>{planet.pl_orbper}</td>
+            <td>{planet.pl_bmassj}</td>
+            <td>{planet.st_dist}</td>
+        </tr>
     }
 
-    componentDidMount(){
-        fetch("https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=exoplanets&select=pl_hostname,pl_name,pl_pnum,pl_orbper,pl_bmassj,st_dist&order=dec&format=json")
-        .then(res => res.json())
-        .then(
-            (result) => {
-                this.setState({
-                    isLoaded: true, 
-                    planets: result
-                }); 
 
-                console.log(result); 
-            }, 
+    function renderTable(planets) {
 
-            (error) => {
-                this.setState({
-                    isLoaded: true, 
-                    error
-                }); 
-            }
-
-            
-        )
-    }
-
-    renderTable(planet){
-        return  <tr key={planet.pl_name}>
+        if (planets.data != null)
+            return planets.data.slice(0, 10).map(planet => {
+                <tr key={planet.pl_name}>
                     <td>{planet.pl_name}</td>
                     <td>{planet.pl_hostname}</td>
                     <td>{planet.pl_pnum}</td>
                     <td>{planet.pl_orbper}</td>
                     <td>{planet.pl_bmassj}</td>
-                    <td>{planet.st_dist}</td>                       
+                    <td>{planet.st_dist}</td>
                 </tr>
+
+            });
+        else
+            return <div>Hello</div>
     }
 
-    generateBarGraph(planets){  
+    function handleChange(event){
+        this.props.onChange(event.target.value); 
+    }
 
-    }   
-    render() {
+    return  <div>
 
-        const {error, isLoaded, planets} = this.state; 
-
-        if(error){
-            return <div>Error: {error.message}</div>
-        }
-        else if (!isLoaded){
-            return <div>Loading...</div>
-        }
-        else{
-            return <Table>
+        <div>There are {planets.length} confimred exoplanets</div>
+        <Table onChange={handleChange}>
                 <thead>
-                    <th>Planet Name</th>
-                    <th>Host Start Name</th>
-                    <th>Number of planets</th>
-                    <th>Orbital Period</th>
-                    <th>Mass (est)</th>
-                    <th>Distance</th>
+                    <tr>
+                        <th>Planet Name</th>
+                        <th>Host Start Name</th>
+                        <th>Number of planets</th>
+                        <th>Orbital Period</th>
+                        <th>Mass (est)</th>
+                        <th>Distance</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    {planets.slice(0,10).map(planet => this.renderTable(planet))}
+                    { renderTable(planets)}
                 </tbody>
             </Table>
-        }
-    }
-}
+
+    </div>
+        
+ }
 
 export default Dashboard;

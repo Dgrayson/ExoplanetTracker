@@ -11,3 +11,33 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+body{
+  background-color: #181818;
+}
+
+#container{
+  background-color: #3d393f;
+  width: 60%; 
+  margin: auto; 
+}
+
+.stat-card{
+  width: 300px; 
+  height: 200px; 
+  background-color: #8f7671;
+}
+
+.card-container{
+  display: flex; 
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  width: 70%;
+  margin: auto;
+  
+}
+
+table{
+  margin: auto;
+}
